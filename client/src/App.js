@@ -56,14 +56,14 @@ const App = () => {
     <TheContext.Provider value={{ history, user, setUser, socket }}>
       {user?.email}
       <nav>
-        <NavLink to="/home">Home</NavLink>
+        <NavLink to="/home"> Home </NavLink>
 
         {user ? (
           <Fragment>
             <NavLink onClick={logOut} to="/">
               Log Out
             </NavLink>
-            <NavLink to="/profile">Profile</NavLink>
+            <NavLink to="/profile"> Profile </NavLink>
           </Fragment>
         ) : (
             <Fragment>
