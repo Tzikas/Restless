@@ -1,10 +1,8 @@
 import React from "react";
-import actions from "../../api/index";
 import { GoogleLogin } from "react-google-login";
 
 const responseGoogle = (props) => {
     const onResponse = (response) => {
-        console.log(response);
         const user = {
             ...response.profileObj,
             password: response.profileObj?.googleId,

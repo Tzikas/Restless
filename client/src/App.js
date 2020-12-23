@@ -7,7 +7,6 @@ import NotFound from "./components/404/NotFound.js";
 import SignUp from "./components/auth/SignUp";
 import LogIn from "./components/auth/LogIn";
 import Profile from "./components/profile/Profile";
-import actions from "./api/index";
 
 
 import {
@@ -18,15 +17,15 @@ import {
 
 import io from "socket.io-client";
 
+const { token } = localStorage;
+
+//Make connection to server just once on page load.
+const socket = io('http://localhost:4001', {
+  query: { token }
+});
 
 
 const App = () => {
-
-  const { token } = localStorage;
-  const socket = io('http://localhost:4001', {
-    query: { token }
-  });
-
 
   let [user, setUser] = useState(null);
 
@@ -40,9 +39,9 @@ const App = () => {
 
     socket.on('error', (err) => console.error(err))
 
-    // CLEAN UP THE EFFECT
+    //Clean up previous connection 
     return () => socket.disconnect();
-    //
+
   }, []);
 
   const logOut = async () => {
