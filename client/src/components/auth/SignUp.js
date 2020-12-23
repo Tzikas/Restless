@@ -9,12 +9,7 @@ const responseGoogle = (props) => {
             ...response.profileObj,
             password: response.profileObj?.googleId,
         };
-        actions
-            .signUp(user)
-            .then((user) => {
-                props.setUser({ ...user?.data });
-            })
-            .catch(response => console.error(response));
+        props.socket.emit('signUp', user)
     };
     return (
         <GoogleLogin

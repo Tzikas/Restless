@@ -14,32 +14,51 @@ import {
   NotificationContainer,
   NotificationManager,
 } from "react-notifications";
-// import io from "socket.io-client";
 
-// const socket = io(baseURL.replace("/api", ""));
+
+import io from "socket.io-client";
+
+// const socket = io(apiURL);
+
+
 
 const App = () => {
+
+  const { token } = localStorage;
+  const socket = io('http://localhost:4001', {
+    query: { token }
+  });
+
+
   let [user, setUser] = useState(null);
 
   useEffect(() => {
-    console.log('turtle')
-    async function getUser() {
-      let { user } = await actions.getUser();
-      console.log(user)
-      setUser(user)
-    }
-    getUser();
+
+    socket.on('user', res => {
+      console.log(res)
+      localStorage.setItem("token", res?.token)
+      setUser(res?.user)
+    })
+
+    socket.on('error', (err) => {
+      console.log('err', err)
+    })
+
+    // CLEAN UP THE EFFECT
+    return () => socket.disconnect();
+    //
   }, []);
 
   const logOut = async () => {
-    let res = await actions.logOut();
+    socket.emit('logOut')
+    localStorage.removeItem('token')
     setUser(null);
   };
 
   const history = useHistory();
 
   return (
-    <TheContext.Provider value={{ history, user, setUser }}>
+    <TheContext.Provider value={{ history, user, setUser, socket }}>
       {user?.email}
       <nav>
         <NavLink to="/home">Home</NavLink>
@@ -53,10 +72,8 @@ const App = () => {
           </Fragment>
         ) : (
             <Fragment>
-              {/* <NavLink to="/sign-up">Sign Up</NavLink>
-              <NavLink to="/log-in">Log In</NavLink> */}
-              {!user && <SignUp setUser={setUser} />}
-              {!user && <LogIn setUser={setUser} />}
+              {!user && <SignUp setUser={setUser} socket={socket} />}
+              {!user && <LogIn setUser={setUser} socket={socket} />}
             </Fragment>
           )}
       </nav>

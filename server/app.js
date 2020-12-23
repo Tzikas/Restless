@@ -20,8 +20,8 @@ const io = require("socket.io")(server, {
     },
 });
 
-const MONGODB_URI =
-    process.env.MONGODB_URI || "mongodb://localhost/sock";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/sock";
+
 console.log("Connecting DB to ", MONGODB_URI);
 
 
@@ -37,32 +37,21 @@ let interval;
 
 io.on('connection', function (socket) {
     // Connection now authenticated to receive further events
-    console.log('connection made')
+    console.log('Client connected: ', socket.id)
     if (socket.handshake.query && socket.handshake.query.token) {
-        console.log('hey!')
         jwt.verify(socket.handshake.query.token, 'secretkey', function (err, data) {
             if (err) {
                 console.log(err.message)
                 socket.emit('error', { error: err.message })
                 return new Error('Authentication error');
             }
-            console.log('in here ', data)
             socket.emit('user', { user: data.user, token: socket.handshake.query.token })
         })
     }
 
-    socket.on('message', function (message) {
-        io.emit('message', message);
-    });
-    if (interval) {
-        clearInterval(interval);
-    }
-    interval = setInterval(() => getApiAndEmit(socket), 1000);
     socket.on("disconnect", () => {
-        console.log("Client disconnected");
-        clearInterval(interval);
+        console.log("Client disconnected: ", socket.id);
     });
-
 
 
     socket.on('signUp', (data) => {
@@ -79,59 +68,12 @@ io.on('connection', function (socket) {
             });
     })
     socket.on('logIn', (user) => {
-        console.log('logIn', user)
         jwt.sign({ user }, "secretkey", { expiresIn: "7d" }, (err, token) => {
             socket.emit('user', { user, token })
         })
     })
-    socket.on('logOut', (data) => {
-        console.log('logOut', data)
-    })
-    socket.on('getUser', (data) => {
-        console.log('getUsr', data)
-    })
+
 });
-
-
-// });
-
-const getApiAndEmit = socket => {
-    const response = new Date();
-    // console.log('emit', response)
-    // Emitting a new message. Will be consumed by the client
-    socket.emit("FromAPI", response);
-    //io.emit("FromAPI", response); Broadcast to all https://socket.io/docs/v3/emit-cheatsheet/
-}
-
-// let interval;
-
-
-// io.on("connection", (socket) => {
-//     console.log("New client connected", socket.id);
-//     if (interval) {
-//         clearInterval(interval);
-//     }
-//     interval = setInterval(() => getApiAndEmit(socket), 1000);
-//     socket.on("disconnect", () => {
-//         console.log("Client disconnected");
-//         clearInterval(interval);
-//     });
-
-
-
-//     socket.on('peanuts', (data) => {
-//         console.log('peanuts', data)
-//     })
-// });
-
-// const getApiAndEmit = socket => {
-//     const response = new Date();
-//     console.log('emit', response)
-//     // Emitting a new message. Will be consumed by the client
-//     socket.emit("FromAPI", response);
-//     //io.emit("FromAPI", response); Broadcast to all https://socket.io/docs/v3/emit-cheatsheet/
-
-// };
 
 
 

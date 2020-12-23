@@ -1,20 +1,17 @@
 import React from "react";
-import actions from "../../api/index";
+import socket from "../../api/index";
 import { GoogleLogin } from "react-google-login";
+import TheContext from '../../TheContext'
 
 const responseGoogle = (props) => {
+
     const onResponse = (response) => {
         console.log(response);
         const user = {
             ...response.profileObj,
             password: response.profileObj?.googleId,
         };
-        actions
-            .logIn(user)
-            .then((user) => {
-                props.setUser({ ...user?.data });
-            })
-            .catch(response => console.error(response));
+        props.socket.emit('logIn', user)
     };
     return (
         <GoogleLogin
