@@ -54,7 +54,6 @@ io.on('connection', function (socket) {
 
 
     socket.on('signUp', (data) => {
-        console.log('signUp', data)
         User.register(data, data.password)
             .then((user) => {
                 jwt.sign({ user }, "secretkey", { expiresIn: "7d" }, (err, token) => {
