@@ -8,8 +8,8 @@ const port = process.env.PORT || 4001;
 const index = require("./routes/index");
 const User = require("./models/User")
 const app = express();
-app.use(cors())
 
+app.use(cors())
 app.use(index);
 
 const server = http.createServer(app);
@@ -23,7 +23,6 @@ const io = require("socket.io")(server, {
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/sock";
 
 console.log("Connecting DB to ", MONGODB_URI);
-
 
 mongoose
     .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -70,9 +69,7 @@ io.on('connection', function (socket) {
             socket.emit('user', { user, token })
         })
     })
-
 });
-
 
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
