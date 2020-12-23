@@ -38,9 +38,7 @@ const App = () => {
       setUser(res?.user)
     })
 
-    socket.on('error', (err) => {
-      console.log('err', err)
-    })
+    socket.on('error', (err) => console.errror(err))
 
     // CLEAN UP THE EFFECT
     return () => socket.disconnect();

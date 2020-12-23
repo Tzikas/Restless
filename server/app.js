@@ -38,35 +38,46 @@ io.on('connection', function (socket) {
     console.log('Client connected: ', socket.id)
     if (socket.handshake.query && socket.handshake.query.token) {
         jwt.verify(socket.handshake.query.token, 'secretkey', function (err, data) {
-            // Connection now authenticated to receive further events
             if (err) {
-                console.log(err.message)
+                console.error(err.message)
                 socket.emit('error', { error: err.message })
                 return new Error('Authentication error');
             }
+
+            // Connection now authenticated
             socket.emit('user', { user: data.user, token: socket.handshake.query.token })
         })
     }
 
-    socket.on("disconnect", () => {
-        console.log("Client disconnected: ", socket.id);
-    });
-
+    socket.on("disconnect", () => console.log("Client disconnected: ", socket.id));
 
     socket.on('signUp', (data) => {
         User.register(data, data.password)
             .then((user) => {
                 jwt.sign({ user }, "secretkey", { expiresIn: "7d" }, (err, token) => {
+                    if (err) {
+                        console.error(err.message)
+                        socket.emit('error', { error: err.message })
+                        return new Error('Authentication error');
+                    }
+                    // Connection now authenticated
                     socket.emit('user', { user, token })
                 });
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
                 socket.emit('error', { error })
             });
     })
     socket.on('logIn', (user) => {
         jwt.sign({ user }, "secretkey", { expiresIn: "7d" }, (err, token) => {
+            if (err) {
+                console.error(err.message)
+                socket.emit('error', { error: err.message })
+                return new Error('Authentication error');
+            }
+
+            // Connection now authenticated
             socket.emit('user', { user, token })
         })
     })
