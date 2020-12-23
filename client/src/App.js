@@ -17,7 +17,7 @@ import {
 
 import io from "socket.io-client";
 
-const { token } = localStorage;
+const { token } = sessionStorage;
 
 //Make connection to server just once on page load.
 const socket = io('http://localhost:4001', {
@@ -33,7 +33,7 @@ const App = () => {
 
     socket.on('user', res => {
       console.log(res)
-      localStorage.setItem("token", res?.token)
+      sessionStorage.setItem("token", res?.token)
       setUser(res?.user)
     })
 
@@ -46,7 +46,7 @@ const App = () => {
 
   const logOut = async () => {
     socket.emit('logOut')
-    localStorage.removeItem('token')
+    sessionStorage.removeItem('token')
     setUser(null);
   };
 
