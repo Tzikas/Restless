@@ -38,11 +38,7 @@ io.on('connection', function (socket) {
     console.log('Client connected: ', socket.id)
     if (socket.handshake.query && socket.handshake.query.token) {
         jwt.verify(socket.handshake.query.token, 'secretkey', function (err, data) {
-            if (err) {
-                console.error(err.message)
-                socket.emit('error', { error: err.message })
-                return new Error('Authentication error');
-            }
+            if (err) return socket.emit('error', { error: err.message })
 
             // Connection now authenticated
             socket.emit('user', { user: data.user, token: socket.handshake.query.token })
@@ -55,11 +51,8 @@ io.on('connection', function (socket) {
         User.register(data, data.password)
             .then((user) => {
                 jwt.sign({ user }, "secretkey", { expiresIn: "7d" }, (err, token) => {
-                    if (err) {
-                        console.error(err.message)
-                        socket.emit('error', { error: err.message })
-                        return new Error('Authentication error');
-                    }
+                    if (err) return socket.emit('error', { error: err.message })
+
                     // Connection now authenticated
                     socket.emit('user', { user, token })
                 });
@@ -71,11 +64,7 @@ io.on('connection', function (socket) {
     })
     socket.on('logIn', (user) => {
         jwt.sign({ user }, "secretkey", { expiresIn: "7d" }, (err, token) => {
-            if (err) {
-                console.error(err.message)
-                socket.emit('error', { error: err.message })
-                return new Error('Authentication error');
-            }
+            if (err) return socket.emit('error', { error: err.message })
 
             // Connection now authenticated
             socket.emit('user', { user, token })
