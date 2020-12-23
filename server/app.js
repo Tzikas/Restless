@@ -33,13 +33,12 @@ mongoose
     .catch((err) => console.error("Error connecting to mongo", err));
 
 
-let interval;
 
 io.on('connection', function (socket) {
-    // Connection now authenticated to receive further events
     console.log('Client connected: ', socket.id)
     if (socket.handshake.query && socket.handshake.query.token) {
         jwt.verify(socket.handshake.query.token, 'secretkey', function (err, data) {
+            // Connection now authenticated to receive further events
             if (err) {
                 console.log(err.message)
                 socket.emit('error', { error: err.message })
