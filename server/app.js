@@ -78,8 +78,11 @@ io.on('connection', function (socket) {
                 socket.emit('error', { error })
             });
     })
-    socket.on('logIn', (data) => {
-        console.log('logIn', data)
+    socket.on('logIn', (user) => {
+        console.log('logIn', user)
+        jwt.sign({ user }, "secretkey", { expiresIn: "7d" }, (err, token) => {
+            socket.emit('user', { user, token })
+        })
     })
     socket.on('logOut', (data) => {
         console.log('logOut', data)

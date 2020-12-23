@@ -24,17 +24,9 @@ const App = () => {
   useEffect(() => {
     console.log('turtle')
     async function getUser() {
-      let user = await actions.getUser();
+      let { user } = await actions.getUser();
       console.log(user)
       setUser(user)
-      // actions.socket.on('user', user => {
-      //   console.log("user is", user);
-      //   setUser(user)
-      // })
-
-      // return () => actions.socket.disconnect();
-
-      //setUser(user?.data);
     }
     getUser();
   }, []);

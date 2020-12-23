@@ -40,17 +40,11 @@ export default {
     signUp: async (user) => {
         let res = await socket.emit('signUp', user)
         console.log(res)
-        //let res = await API.post("/signup", user, resetHead());
         window.localStorage.setItem("token", res?.token);
-        // return res;
     },
     logIn: async (user) => {
+        console.log(user)
         socket.emit('logIn', user)
-
-        //let res = await API.post("/login", user, resetHead());
-
-        //window.localStorage.setItem("token", res?.data?.token);
-        // return res;
     },
 };
 
