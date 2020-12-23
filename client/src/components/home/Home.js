@@ -6,19 +6,19 @@ export default function Home() {
     const [response, setResponse] = useState("");
 
     useEffect(() => {
-        const socket = socketIOClient(ENDPOINT);
-        socket.on("FromAPI", data => {
-            setResponse(data);
-        });
+        // const socket = socketIOClient(ENDPOINT);
+        // socket.on("FromAPI", data => {
+        //     setResponse(data);
+        // });
 
-        // CLEAN UP THE EFFECT
-        return () => socket.disconnect();
+        // // CLEAN UP THE EFFECT
+        // return () => socket.disconnect();
         //
     }, []);
 
     return (
         <p>
-            It's <time dateTime={response}>{response}</time>
+            Home
         </p>
     );
 }
