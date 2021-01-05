@@ -28,61 +28,71 @@ const socket = io('http://localhost:4001', {
 const App = () => {
 
   let [user, setUser] = useState(null);
+  let [all, setAll] = useState([])
 
   useEffect(() => {
 
-    socket.on('user', res => {
+    socket.on('new-connection', res => {
       console.log(res)
-      sessionStorage.setItem("token", res?.token)
-      setUser(res?.user)
     })
+
+    socket.on('user', ({ user, token, socketId }) => {
+      console.log(user, token, socketId)
+      if (token)
+        sessionStorage.setItem("token", token)
+      user.socketId = socketId
+      setUser(user)
+    })
+
+    socket.on('add', ({ user, socketId }) => {
+      console.log('add ', user?.name, socketId)
+    })
+    socket.on('subtract', ({ user, socketId }) => {
+      console.log('subtract ', user?.name, socketId)
+
+    })
+
 
     socket.on('error', (err) => console.error(err))
 
     //Clean up previous connection 
-    return () => socket.disconnect();
+    return () => {
+      socket.off('new-connection')
+      socket.off('user')
+      socket.off('add')
+      socket.off('subtract')
+      socket.off('error')
+      socket.disconnect();
+    }
 
   }, []);
 
-  const logOut = async () => {
-    socket.emit('logOut')
-    sessionStorage.removeItem('token')
-    setUser(null);
-  };
+
 
   const history = useHistory();
 
   return (
     <TheContext.Provider value={{ history, user, setUser, socket }}>
-      {user?.email}
+      <h3>{user?.name} {user?.socketId}</h3>
       <nav>
-        <NavLink to="/home"> Home </NavLink>
+        {/* <NavLink to='/'>Home</NavLink>
+        <NavLink to='/profile/${sdf}'>Profile</NavLink> */}
+        <button onClick={() => history.push(`/`)}>Home</button>
+        <button onClick={() => history.push(`/profile/${user._id}`)}>Profile</button>
 
-        {user ? (
-          <Fragment>
-            <NavLink onClick={logOut} to="/">
-              Log Out
-            </NavLink>
-            <NavLink to="/profile"> Profile </NavLink>
-          </Fragment>
-        ) : (
-            <Fragment>
-              {!user && <SignUp setUser={setUser} socket={socket} />}
-              {!user && <LogIn setUser={setUser} socket={socket} />}
-            </Fragment>
-          )}
+        <h2>meow. im huuungry. meow.</h2>
       </nav>
       <Switch>
         <Route
           exact
-          path="/home"
+          path="/"
           render={(props) => <Home {...props} user={user} />}
         />
 
 
         <Route
           exact
-          path="/profile"
+          path="/profile/:id"
           render={(props) => <Profile {...props} />}
         />
 
